@@ -11,6 +11,14 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+target/
+.mvn/
+mvnw*
 
 # AWS User-specific
 .idea/**/aws.xml
