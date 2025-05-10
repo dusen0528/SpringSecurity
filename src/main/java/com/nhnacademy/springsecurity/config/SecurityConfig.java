@@ -2,7 +2,7 @@ package com.nhnacademy.springsecurity.config;
 
 import com.nhnacademy.springsecurity.security.JwtAuthenticationFilter;
 import com.nhnacademy.springsecurity.security.JwtTokenProvider;
-import com.nhnacademy.springsecurity.user.service.CustomUserDetailService;
+import com.nhnacademy.springsecurity.member.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final CustomUserDetailService userDetailService;
+    private final CustomUserDetailsService userDetailService;
     private final JwtTokenProvider jwtProvider;
 
     @Bean
@@ -33,7 +33,9 @@ public class SecurityConfig {
                 )
                 // 2) H2 콘솔 CSRF 예외 처리 및 iframe 허용
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"),
+                                new AntPathRequestMatcher("/api/auth/**")
+                        )
                 ).headers(headers -> headers
                         .frameOptions(frame -> frame.disable())
                 )

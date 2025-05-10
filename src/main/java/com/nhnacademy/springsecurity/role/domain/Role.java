@@ -1,12 +1,15 @@
 package com.nhnacademy.springsecurity.role.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
 @Table(name = "roles")
-@RequiredArgsConstructor
+
+@NoArgsConstructor(access =  AccessLevel.PROTECTED)
 @Getter
 public class Role {
 
@@ -16,5 +19,7 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-
+    public Role(String name) {
+        this.name = name;
+    }
 }
