@@ -1,5 +1,7 @@
 package com.nhnacademy.springsecurity.config;
 
+import com.nhnacademy.springsecurity.security.JwtAuthenticationFilter;
+import com.nhnacademy.springsecurity.security.JwtTokenProvider;
 import com.nhnacademy.springsecurity.user.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -19,7 +22,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final CustomUserDetailService userDetailService;
-//    private final JwtTokenProvider jwtProvider;
+    private final JwtTokenProvider jwtProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,10 +43,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated()                                 // 그 외는 인증 필요
                 )
                 // 4) 커스텀 AuthenticationManager 주입
-                .authenticationManager(authenticationManager(http));
+                .authenticationManager(authenticationManager(http))
                 // 5) JWT 검증 필터를 UsernamePasswordAuthenticationFilter 앞에 삽입
-//                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
-//                        UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

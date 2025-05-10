@@ -1,21 +1,6 @@
-package com.nhnacademy.springsecurity.security;
+## JwtAuthenticationFilter
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-
-@RequiredArgsConstructor
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private final JwtTokenProvider jwtTokenProvider;
-
+```java
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
@@ -37,6 +22,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+```
+
+- 헤더 파싱 : Authorization 헤더에서 Bearer 접두사가 있는지 검사
+- 이후 validateToekn → 토큰 검사
+- 유효하다면 토큰 안에서 인증 정보 추출
+- Authentication 객체 SecurityContext에 저장 후 다음 필터로 전달
+
+```java
     // 검사가 필요없는 경로는 검사 예외
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -44,5 +37,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return path.startsWith("/api/auth/") || path.startsWith("/h2-console/");
     }
 
+```
 
-}
+- 단 auth/login, auth/register 혹은 h2-console과 같이 검사가 불필요한 부분은 shouldNotFilter 구현으로 검사에서 제외함
+
+필터 개발이 완료되었으므로 SecurityConfig에서 다음과 같이 추가
+
+```java
+                // 4) 커스텀 AuthenticationManager 주입
+                .authenticationManager(authenticationManager(http))
+                // 5) JWT 검증 필터를 UsernamePasswordAuthenticationFilter 앞에 삽입
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                        UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+```
