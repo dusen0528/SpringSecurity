@@ -52,10 +52,11 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder auth =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
+
         auth
-                // DB에서 사용자 로드 + BCrypt 비밀번호 검증
                 .userDetailsService(userDetailService)
                 .passwordEncoder(passwordEncoder());
+
         return auth.build();
     }
 
